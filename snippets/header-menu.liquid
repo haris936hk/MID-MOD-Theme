@@ -1,9 +1,27 @@
+{%- doc -%}
+  MIN + MOD enhanced navigation structure for curated home marketplace.
+  Provides organized navigation by Room, Type, and Style as specified in requirements.
+
+  @param {boolean} [mobile_view] - Whether to render mobile navigation
+  @param {string} [current_collection] - Current collection handle for active states
+
+  @example
+  {% render 'header-menu' %}
+  {% render 'header-menu', mobile_view: true %}
+{%- enddoc -%}
+
 {% liquid
   assign block_settings = block.settings
   assign color_scheme_classes = ''
   assign color_scheme_setting_id = 'color_scheme_' | append: section.settings.menu_row
   assign current_color_scheme = block_settings.color_scheme
   assign parent_color_scheme = section.settings[color_scheme_setting_id]
+  assign mobile_view = mobile_view | default: false
+  assign nav_class = 'min-mod-nav'
+
+  if mobile_view
+    assign nav_class = nav_class | append: ' min-mod-nav--mobile'
+  endif
 
   if parent_color_scheme.id != current_color_scheme.id
     assign color_scheme_classes = ' color-' | append: current_color_scheme
@@ -14,75 +32,69 @@
   endif
 %}
 
-<!-- MIN + MOD Enhanced Navigation -->
-<nav class="min-mod-header-nav" data-min-mod-nav>
+<nav class="{{ nav_class }}" data-min-mod-nav>
   <div class="nav-container">
 
-    <!-- PRODUCTS Main Category with Enhanced Dropdown -->
-    <div class="nav-section nav-section--products" data-nav-section>
-      <a href="{{ collections.all.url }}" class="nav-section__title" data-nav-trigger>
+    <!-- PRODUCTS Main Category -->
+    <div class="nav-section nav-section--products">
+      <a href="{{ collections.all.url }}" class="nav-section__title">
         {{ 'navigation.products' | t }}
-        <svg class="nav-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-          <path d="M1 1L6 7L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
       </a>
 
-      <div class="nav-mega-dropdown{{ color_scheme_classes }}" data-nav-dropdown>
-        <div class="nav-mega-inner">
+      <div class="nav-dropdown" data-nav-dropdown>
 
-          <!-- Shop by Room -->
-          <div class="nav-column nav-column--room">
-            <h4 class="nav-column__title">{{ 'navigation.shop_by_room' | t }}</h4>
-            <ul class="nav-list">
-              <li><a href="{{ collections.living.url | default: '/collections/living' }}" class="nav-link">{{ 'navigation.rooms.living' | t }}</a></li>
-              <li><a href="{{ collections.kitchen.url | default: '/collections/kitchen' }}" class="nav-link">{{ 'navigation.rooms.kitchen' | t }}</a></li>
-              <li><a href="{{ collections.dining.url | default: '/collections/dining' }}" class="nav-link">{{ 'navigation.rooms.dining' | t }}</a></li>
-              <li><a href="{{ collections.bedroom.url | default: '/collections/bedroom' }}" class="nav-link">{{ 'navigation.rooms.bedroom' | t }}</a></li>
-              <li><a href="{{ collections.study.url | default: '/collections/study' }}" class="nav-link">{{ 'navigation.rooms.study' | t }}</a></li>
-              <li><a href="{{ collections.laundry.url | default: '/collections/laundry' }}" class="nav-link">{{ 'navigation.rooms.laundry' | t }}</a></li>
-              <li><a href="{{ collections.bathroom.url | default: '/collections/bathroom' }}" class="nav-link">{{ 'navigation.rooms.bathroom' | t }}</a></li>
-              <li><a href="{{ collections.kids-room.url | default: '/collections/kids-room' }}" class="nav-link">{{ 'navigation.rooms.kids_room' | t }}</a></li>
-            </ul>
-          </div>
-
-          <!-- Shop by Type -->
-          <div class="nav-column nav-column--type">
-            <h4 class="nav-column__title">{{ 'navigation.shop_by_type' | t }}</h4>
-            <ul class="nav-list">
-              <li><a href="{{ collections.vases-vessels.url | default: '/collections/vases-vessels' }}" class="nav-link">{{ 'navigation.types.vases_vessels' | t }}</a></li>
-              <li><a href="{{ collections.sculptures-objects.url | default: '/collections/sculptures-objects' }}" class="nav-link">{{ 'navigation.types.sculptures_objects' | t }}</a></li>
-              <li><a href="{{ collections.kitchen-tableware.url | default: '/collections/kitchen-tableware' }}" class="nav-link">{{ 'navigation.types.kitchen_tableware' | t }}</a></li>
-              <li><a href="{{ collections.trays-bowls.url | default: '/collections/trays-bowls' }}" class="nav-link">{{ 'navigation.types.trays_bowls' | t }}</a></li>
-              <li><a href="{{ collections.cushions-throws.url | default: '/collections/cushions-throws' }}" class="nav-link">{{ 'navigation.types.cushions_throws' | t }}</a></li>
-              <li><a href="{{ collections.storage-organisation.url | default: '/collections/storage-organisation' }}" class="nav-link">{{ 'navigation.types.storage_organisation' | t }}</a></li>
-              <li><a href="{{ collections.accessories.url | default: '/collections/accessories' }}" class="nav-link">{{ 'navigation.types.accessories' | t }}</a></li>
-              <li><a href="{{ collections.plants-florals.url | default: '/collections/plants-florals' }}" class="nav-link">{{ 'navigation.types.plants_florals' | t }}</a></li>
-            </ul>
-          </div>
-
-          <!-- Shop by Material -->
-          <div class="nav-column nav-column--material">
-            <h4 class="nav-column__title">{{ 'navigation.shop_by_material' | t }}</h4>
-            <ul class="nav-list">
-              <li><a href="{{ collections.glass-acrylic.url | default: '/collections/glass-acrylic' }}" class="nav-link">{{ 'navigation.materials.glass_acrylic' | t }}</a></li>
-              <li><a href="{{ collections.marble-stone.url | default: '/collections/marble-stone' }}" class="nav-link">{{ 'navigation.materials.marble_stone' | t }}</a></li>
-              <li><a href="{{ collections.chrome.url | default: '/collections/chrome' }}" class="nav-link">{{ 'navigation.materials.chrome' | t }}</a></li>
-              <li><a href="{{ collections.resin-ceramic.url | default: '/collections/resin-ceramic' }}" class="nav-link">{{ 'navigation.materials.resin_ceramic' | t }}</a></li>
-            </ul>
-          </div>
-
-          <!-- Shop by Style -->
-          <div class="nav-column nav-column--style">
-            <h4 class="nav-column__title">{{ 'navigation.shop_by_style' | t }}</h4>
-            <ul class="nav-list">
-              <li><a href="{{ collections.modern-contemporary.url | default: '/collections/modern-contemporary' }}" class="nav-link">{{ 'navigation.styles.modern_contemporary' | t }}</a></li>
-              <li><a href="{{ collections.coastal.url | default: '/collections/coastal' }}" class="nav-link">{{ 'navigation.styles.coastal' | t }}</a></li>
-              <li><a href="{{ collections.retro.url | default: '/collections/retro' }}" class="nav-link">{{ 'navigation.styles.retro' | t }}</a></li>
-              <li><a href="{{ collections.wabi-sabi.url | default: '/collections/wabi-sabi' }}" class="nav-link">{{ 'navigation.styles.wabi_sabi' | t }}</a></li>
-            </ul>
-          </div>
-
+        <!-- Shop by Room -->
+        <div class="nav-column nav-column--room">
+          <h4 class="nav-column__title">{{ 'navigation.shop_by_room' | t }}</h4>
+          <ul class="nav-list">
+            <li><a href="{{ collections.living.url | default: '/collections/living' }}">{{ 'navigation.rooms.living' | t }}</a></li>
+            <li><a href="{{ collections.kitchen.url | default: '/collections/kitchen' }}">{{ 'navigation.rooms.kitchen' | t }}</a></li>
+            <li><a href="{{ collections.dining.url | default: '/collections/dining' }}">{{ 'navigation.rooms.dining' | t }}</a></li>
+            <li><a href="{{ collections.bedroom.url | default: '/collections/bedroom' }}">{{ 'navigation.rooms.bedroom' | t }}</a></li>
+            <li><a href="{{ collections.study.url | default: '/collections/study' }}">{{ 'navigation.rooms.study' | t }}</a></li>
+            <li><a href="{{ collections.laundry.url | default: '/collections/laundry' }}">{{ 'navigation.rooms.laundry' | t }}</a></li>
+            <li><a href="{{ collections.bathroom.url | default: '/collections/bathroom' }}">{{ 'navigation.rooms.bathroom' | t }}</a></li>
+            <li><a href="{{ collections.kids-room.url | default: '/collections/kids-room' }}">{{ 'navigation.rooms.kids_room' | t }}</a></li>
+          </ul>
         </div>
+
+        <!-- Shop by Type -->
+        <div class="nav-column nav-column--type">
+          <h4 class="nav-column__title">{{ 'navigation.shop_by_type' | t }}</h4>
+          <ul class="nav-list">
+            <li><a href="{{ collections.vases-vessels.url | default: '/collections/vases-vessels' }}">{{ 'navigation.types.vases_vessels' | t }}</a></li>
+            <li><a href="{{ collections.sculptures-objects.url | default: '/collections/sculptures-objects' }}">{{ 'navigation.types.sculptures_objects' | t }}</a></li>
+            <li><a href="{{ collections.kitchen-tableware.url | default: '/collections/kitchen-tableware' }}">{{ 'navigation.types.kitchen_tableware' | t }}</a></li>
+            <li><a href="{{ collections.trays-bowls.url | default: '/collections/trays-bowls' }}">{{ 'navigation.types.trays_bowls' | t }}</a></li>
+            <li><a href="{{ collections.cushions-throws.url | default: '/collections/cushions-throws' }}">{{ 'navigation.types.cushions_throws' | t }}</a></li>
+            <li><a href="{{ collections.storage-organisation.url | default: '/collections/storage-organisation' }}">{{ 'navigation.types.storage_organisation' | t }}</a></li>
+            <li><a href="{{ collections.accessories.url | default: '/collections/accessories' }}">{{ 'navigation.types.accessories' | t }}</a></li>
+            <li><a href="{{ collections.plants-florals.url | default: '/collections/plants-florals' }}">{{ 'navigation.types.plants_florals' | t }}</a></li>
+          </ul>
+        </div>
+
+        <!-- Shop by Material -->
+        <div class="nav-column nav-column--material">
+          <h4 class="nav-column__title">{{ 'navigation.shop_by_material' | t }}</h4>
+          <ul class="nav-list">
+            <li><a href="{{ collections.glass-acrylic.url | default: '/collections/glass-acrylic' }}">{{ 'navigation.materials.glass_acrylic' | t }}</a></li>
+            <li><a href="{{ collections.marble-stone.url | default: '/collections/marble-stone' }}">{{ 'navigation.materials.marble_stone' | t }}</a></li>
+            <li><a href="{{ collections.chrome.url | default: '/collections/chrome' }}">{{ 'navigation.materials.chrome' | t }}</a></li>
+            <li><a href="{{ collections.resin-ceramic.url | default: '/collections/resin-ceramic' }}">{{ 'navigation.materials.resin_ceramic' | t }}</a></li>
+          </ul>
+        </div>
+
+        <!-- Shop by Style -->
+        <div class="nav-column nav-column--style">
+          <h4 class="nav-column__title">{{ 'navigation.shop_by_style' | t }}</h4>
+          <ul class="nav-list">
+            <li><a href="{{ collections.modern-contemporary.url | default: '/collections/modern-contemporary' }}">{{ 'navigation.styles.modern_contemporary' | t }}</a></li>
+            <li><a href="{{ collections.coastal.url | default: '/collections/coastal' }}">{{ 'navigation.styles.coastal' | t }}</a></li>
+            <li><a href="{{ collections.retro.url | default: '/collections/retro' }}">{{ 'navigation.styles.retro' | t }}</a></li>
+            <li><a href="{{ collections.wabi-sabi.url | default: '/collections/wabi-sabi' }}">{{ 'navigation.styles.wabi_sabi' | t }}</a></li>
+          </ul>
+        </div>
+
       </div>
     </div>
 
@@ -104,160 +116,104 @@
 </nav>
 
 {% stylesheet %}
-  /* MIN + MOD Enhanced Header Navigation (full) */
-
-  :root {
-    /* fallback variables - replace with your theme variables if needed */
-    --color-background: #ffffff;
-    --color-foreground: #111111;
-    --color-foreground-heading: #000000;
-    --color-foreground-rgb: 17,17,17;
-    --header-height: 72px;
+  /* Navigation Dropdown Transitions */
+  .nav-dropdown {
+    transition: var(--dropdown-transition);
+    transform-origin: top center;
   }
 
+  /* Navigation center positioning */
   .min-mod-header-nav {
     position: relative;
-    z-index: 1000;
+    z-index: 100;
+    width: 100%;
     display: flex;
     justify-content: center;
-    width: 100%;
-    margin-left: 2rem; /* Reduced space between logo and navigation */
   }
 
   .min-mod-header-nav .nav-container {
     display: flex;
     align-items: center;
+    gap: 2rem;
     justify-content: center;
-    gap: 1.5rem; /* Reduced gap between items */
-    height: auto;
-    padding: 0;
-    margin: 0 1rem; /* Reduced horizontal margin */
+  }
+
+  .min-mod-nav {
+    background: var(--color-background);
+    border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+    position: relative;
+    z-index: 100;
+  }
+
+  .nav-container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 var(--page-margin);
+    display: flex;
+    align-items: center;
+    gap: 3rem;
   }
 
   .nav-section {
     position: relative;
-    display: flex;
-    align-items: center;
-    height: auto;
-    padding: 0;
-    margin: 0;
-  }
-
-  /* Ensure products section has proper positioning context for dropdown */
-  .nav-section--products {
-    position: relative;
-    z-index: 101; /* Above base navigation but below dropdown */
-  }
-
-  /* Container to ensure proper dropdown positioning */
-  .nav-container {
-    position: static;
-  }
-
-  /* -------------------------
-     Titles & Links (unified)
-     ------------------------- */
-
-  .nav-section__title,
-  .nav-link {
-    display: inline-block; /* inline-block keeps underline close to the text baseline */
-    position: relative;
-    gap: 0.4rem;
-    padding: 0;
-    margin: 0;
-    color: var(--color-foreground);
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    font-size: 0.75rem;
-    transition: color 0.2s ease;
-    line-height: 1.2; /* consistent rhythm — fixes the underline gap */
-    text-decoration: none;
-    vertical-align: middle;
   }
 
   .nav-section__title {
-    display: inline-flex;
-    align-items: center;
+    display: block;
+    padding: 1.5rem 0;
+    text-decoration: none;
+    color: var(--color-foreground);
+    font-weight: 500;
     text-transform: uppercase;
-  }
-
-  .nav-section__title:hover,
-  .nav-link:hover {
-    color: var(--color-foreground-heading);
-  }
-
-  .nav-arrow {
-    transition: transform 0.3s ease;
-    opacity: 0.7;
-    flex-shrink: 0;
-    width: 8px; /* Made even smaller */
-    height: 5px; /* Made even smaller */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1px; /* Slight vertical adjustment */
-  }
-
-  .nav-section--products:hover .nav-arrow {
-    transform: rotate(180deg);
-    opacity: 1;
-  }
-
-  /* -------------------------
-     Mega Dropdown
-     ------------------------- */
-
-  .nav-mega-dropdown {
-    position: fixed;
-    top: var(--header-height);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-background);
-    border: 1px solid rgba(var(--color-foreground-rgb), 0.08);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 0;
-    width: min(800px, calc(100vw - 40px)); /* Responsive width that respects viewport */
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.22s cubic-bezier(.2,.9,.2,1);
-    z-index: 1001; /* Higher than header and announcement bar */
-    margin-top: 5px; /* Small fixed gap */
-    pointer-events: none;
-  }
-
-  /* Smart positioning for smaller viewports */
-  @media screen and (max-width: 860px) {
-    .nav-mega-dropdown {
-      width: calc(100vw - 20px);
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  }
-
-  /* Visible state (controlled via hover or JS) */
-  .nav-section--products.nav-active .nav-mega-dropdown,
-  .nav-section--products:hover .nav-mega-dropdown {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .nav-mega-inner {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    padding: 2.5rem;
-  }
-
-  .nav-column {
-    padding: 0 1.5rem;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
     position: relative;
   }
 
-  .nav-column:not(:last-child) {
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
-    margin-right: -1px; /* Prevent layout shift */
+  .nav-section__title::after {
+    content: '';
+    position: absolute;
+    bottom: 1.5rem;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-foreground);
+    transition: width 0.3s ease;
+  }
+
+  .nav-section__title:hover {
+    color: var(--color-foreground-heading);
+  }
+
+  .nav-section__title:hover::after {
+    width: 100%;
+  }
+
+  .nav-section--products:hover .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--color-background);
+    border: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    min-width: 800px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
   }
 
   .nav-column__title {
@@ -266,9 +222,9 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--color-foreground-heading);
-    margin: 0 0 1.5rem 0;
-    padding-bottom: 0.75rem;
+    margin: 0 0 1rem 0;
     border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+    padding-bottom: 0.5rem;
   }
 
   .nav-list {
@@ -285,233 +241,204 @@
     margin-bottom: 0;
   }
 
-  .nav-link {
+  .nav-list a {
+    display: block;
+    text-decoration: none;
+    color: var(--color-foreground);
     font-size: 0.875rem;
     text-transform: lowercase;
     line-height: 1.4;
     transition: color 0.2s ease;
-    color: var(--color-foreground);
+    padding: 0.25rem 0;
+    position: relative;
   }
 
-  .nav-link:hover {
-    color: var(--color-foreground-heading);
-  }
-
-  /* -------------------------
-     Underline (shared & tight)
-     ------------------------- */
-
-  /* Shared base underline for both titles and links */
-  .nav-section__title::after,
-  .nav-link::after {
+  .nav-list a::after {
     content: '';
     position: absolute;
-    bottom: 0px;  /* tight underline just below the text */            
+    bottom: 0.25rem;
     left: 0;
     width: 0;
     height: 1px;
-    background-color: currentColor;
-    transition: width 0.22s ease;
-    transform: none;
+    background-color: var(--color-foreground-heading);
+    transition: width 0.3s ease;
   }
 
-  /* Hover/active expansion */
-  .nav-section__title:hover::after,
-  .nav-link:hover::after,
-  .nav-section__title.active::after,
-  .nav-link.active::after {
+  .nav-list a:hover {
+    color: var(--color-foreground-heading);
+  }
+
+  .nav-list a:hover::after {
     width: 100%;
   }
 
-  /* -------------------------
-     Dropdown-specific tweaks
-     ------------------------- */
-
-  /* Keep dropdown anchors easily clickable while using inline-block underline */
-  .nav-mega-dropdown .nav-link {
-    display: inline-block;
-    padding: 4px 0; /* clickable area while keeping underline close */
-    width: auto;   /* don't force full-width, keep tidy lines */
+  /* Mobile Navigation */
+  .min-mod-nav--mobile {
+    display: none;
   }
 
-  /* Focus and hover accessibility */
-  .nav-section__title,
-  .nav-link {
-    outline: none;
-  }
-
-  .nav-section__title:focus::after,
-  .nav-link:focus::after {
-    width: 100%;
-  }
-
-  /* Mobile responsiveness: hide this desktop nav on smaller screens */
   @media screen and (max-width: 1024px) {
-    .min-mod-header-nav {
+    .min-mod-nav:not(.min-mod-nav--mobile) {
       display: none;
     }
+
+    .min-mod-nav--mobile {
+      display: block;
+      background: var(--color-background);
+    }
+
+    .min-mod-nav--mobile .nav-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .min-mod-nav--mobile .nav-section {
+      border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+    }
+
+    .min-mod-nav--mobile .nav-section__title {
+      padding: 1rem 0;
+      position: relative;
+    }
+
+    .min-mod-nav--mobile .nav-section--products .nav-section__title::after {
+      content: '+';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.25rem;
+      transition: transform 0.2s ease;
+    }
+
+    .min-mod-nav--mobile .nav-section--products.active .nav-section__title::after {
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .min-mod-nav--mobile .nav-dropdown {
+      position: static;
+      display: none;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      grid-template-columns: 1fr;
+      min-width: auto;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+      padding: 0 0 1rem 0;
+      background: rgba(var(--color-foreground-rgb), 0.02);
+    }
+
+    .min-mod-nav--mobile .nav-section--products.active .nav-dropdown {
+      display: grid;
+    }
+
+    .min-mod-nav--mobile .nav-column {
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.05);
+    }
+
+    .min-mod-nav--mobile .nav-column:last-child {
+      border-bottom: none;
+    }
   }
 
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    .nav-section__title,
-    .nav-arrow,
-    .nav-mega-dropdown,
-    .nav-link,
-    .nav-section__title::after,
-    .nav-link::after {
-      transition: none !important;
+  /* Enhanced focus states for accessibility */
+  .nav-section__title:focus,
+  .nav-list a:focus {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  /* Animation for dropdown appearance */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .nav-dropdown.animate-in {
+    animation: fadeInUp 0.3s ease forwards;
   }
 {% endstylesheet %}
 
 {% javascript %}
-  class MinModHeaderNavigation extends HTMLElement {
+  class MinModNavigation extends HTMLElement {
     constructor() {
       super();
-      // Defer heavy init to connectedCallback to ensure DOM ready for this element
-    }
-
-    connectedCallback() {
-      // Initialize when element is added to DOM
       this.init();
     }
 
     init() {
+      this.isMobile = this.classList.contains('min-mod-nav--mobile');
       this.productSection = this.querySelector('.nav-section--products');
-      this.dropdown = this.querySelector('.nav-mega-dropdown');
-      this.trigger = this.querySelector('[data-nav-trigger]');
+      this.dropdown = this.querySelector('.nav-dropdown');
 
-      if (this.productSection && this.dropdown) {
+      if (this.isMobile && this.productSection) {
+        this.setupMobileNavigation();
+      } else if (this.dropdown) {
         this.setupDesktopNavigation();
-        this.updateDropdownPosition();
-
-        // Update position on resize and scroll (throttled)
-        window.addEventListener('resize', () => this.updateDropdownPosition());
-
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-          clearTimeout(scrollTimeout);
-          scrollTimeout = setTimeout(() => this.updateDropdownPosition(), 16); // ~60fps-ish throttle
-        });
-
-        // Watch for sticky state changes
-        this.observeStickyState();
       }
     }
 
-    updateDropdownPosition() {
-      const headerComponent = document.getElementById('header-component');
-      if (!headerComponent) {
-        // Fallback: compute from top of page, using CSS var fallback
-        const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 72;
-        this.dropdown.style.top = `${headerHeight + 30}px`;
-        return;
-      }
+    setupMobileNavigation() {
+      const title = this.productSection.querySelector('.nav-section__title');
 
-      const headerRect = headerComponent.getBoundingClientRect();
-      // If your header toggles sticky attribute, observeStickyState will trigger recalculations
-      const topValue = headerRect.height + 30;
-      this.dropdown.style.top = `${topValue}px`;
-    }
-
-    observeStickyState() {
-      const headerComponent = document.getElementById('header-component');
-      if (!headerComponent) return;
-
-      // Use MutationObserver to watch for attribute changes
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' &&
-              (mutation.attributeName === 'data-sticky-state' || mutation.attributeName === 'sticky')) {
-            this.updateDropdownPosition();
-          }
-        });
-      });
-
-      observer.observe(headerComponent, {
-        attributes: true,
-        attributeFilter: ['data-sticky-state', 'sticky']
+      title.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.toggleMobileDropdown();
       });
     }
 
     setupDesktopNavigation() {
       let hoverTimeout;
-      let isHovering = false;
 
-      // Enhanced hover with delay to avoid flicker
       this.productSection.addEventListener('mouseenter', () => {
         clearTimeout(hoverTimeout);
-        isHovering = true;
-
-        // Small delay for intentional hovers
-        setTimeout(() => {
-          if (isHovering) {
-            this.showDropdown();
-          }
-        }, 150);
+        this.showDropdown();
       });
 
       this.productSection.addEventListener('mouseleave', () => {
-        isHovering = false;
-
-        // Longer delay when leaving to prevent flickering
         hoverTimeout = setTimeout(() => {
           this.hideDropdown();
-        }, 300);
+        }, 150);
       });
 
-      // Keyboard navigation support on trigger
-      if (this.trigger) {
-        this.trigger.setAttribute('role', 'button');
-        this.trigger.setAttribute('aria-haspopup', 'true');
-
-        this.trigger.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            this.toggleDropdown();
-          } else if (e.key === 'Escape') {
-            this.hideDropdown();
-            this.trigger.focus();
-          }
-        });
-      }
-
-      // Focus management for dropdown links
-      this.dropdown.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+      // Keyboard navigation
+      this.productSection.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.toggleDropdown();
+        } else if (e.key === 'Escape') {
           this.hideDropdown();
-          if (this.trigger) this.trigger.focus();
         }
       });
+    }
 
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!this.contains(e.target) && this.productSection.getAttribute('aria-expanded') === 'true') {
-          this.hideDropdown();
-        }
-      }, true);
+    toggleMobileDropdown() {
+      this.productSection.classList.toggle('active');
     }
 
     showDropdown() {
-      // Update position before showing
-      this.updateDropdownPosition();
-
-      this.productSection.setAttribute('aria-expanded', 'true');
-      this.dropdown.style.pointerEvents = 'auto';
-      // Add active class to trigger CSS visible state (opacity/visibility)
-      this.productSection.classList.add('nav-active');
+      if (this.dropdown) {
+        this.dropdown.classList.add('animate-in');
+      }
     }
 
     hideDropdown() {
-      this.productSection.setAttribute('aria-expanded', 'false');
-      this.dropdown.style.pointerEvents = 'none';
-      this.productSection.classList.remove('nav-active');
+      if (this.dropdown) {
+        this.dropdown.classList.remove('animate-in');
+      }
     }
 
     toggleDropdown() {
-      const isExpanded = this.productSection.getAttribute('aria-expanded') === 'true';
-      if (isExpanded) {
+      if (this.dropdown.style.opacity === '1') {
         this.hideDropdown();
       } else {
         this.showDropdown();
@@ -519,21 +446,22 @@
     }
   }
 
-  // Auto-initialize when DOM is ready
-  if (customElements.get('min-mod-header-navigation') === undefined) {
-    customElements.define('min-mod-header-navigation', MinModHeaderNavigation);
+  // Register the custom element
+  if (!customElements.get('min-mod-navigation')) {
+    customElements.define('min-mod-navigation', MinModNavigation);
   }
 
+  // Initialize all navigation instances
   document.addEventListener('DOMContentLoaded', () => {
     const navs = document.querySelectorAll('[data-min-mod-nav]');
     navs.forEach(nav => {
-      // Only replace if not already upgraded
-      if (nav.tagName.toLowerCase() !== 'min-mod-header-navigation') {
-        const newNav = document.createElement('min-mod-header-navigation');
+      if (!customElements.get('min-mod-navigation')) return;
+
+      // Convert to custom element if not already
+      if (nav.tagName.toLowerCase() !== 'min-mod-navigation') {
+        const newNav = document.createElement('min-mod-navigation');
         newNav.innerHTML = nav.innerHTML;
-        // copy classes and attributes that matter
         newNav.className = nav.className;
-        // replace in DOM
         nav.parentNode.replaceChild(newNav, nav);
       }
     });

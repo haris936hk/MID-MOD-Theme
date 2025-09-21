@@ -1040,6 +1040,22 @@
   .menu-drawer__menu-item-text {
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+  }
+
+  .menu-drawer__menu-item:not(summary):not(:has(> .menu-drawer__link-image))::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--color-foreground);
+    transition: width 0.3s ease;
+  }
+
+  .menu-drawer__menu-item:not(summary):not(:has(> .menu-drawer__link-image)):hover::after {
+    width: 100%;
   }
 
   /** Styles when the country selector is hidden */

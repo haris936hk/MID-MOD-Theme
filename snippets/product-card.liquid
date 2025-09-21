@@ -214,4 +214,68 @@
   .product-card [data-available-count='0'] ~ svg {
     display: block;
   }
+
+  /* Product Card Enhancements */
+  .product-card {
+    background: #ffffff;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .product-card:hover {
+    box-shadow: none;
+  }
+
+  /* Product title hover underline effect */
+  .product-card a[ref="productTitleLink"] {
+    text-decoration: none !important;
+  }
+
+  .product-card a[ref="productTitleLink"] * {
+    text-decoration: none !important;
+  }
+
+  .product-card:hover a[ref="productTitleLink"] {
+    text-decoration: underline !important;
+    text-decoration-color: currentColor !important;
+  }
+
+  .product-card:hover a[ref="productTitleLink"] .text-block {
+    text-decoration: underline !important;
+    text-decoration-color: currentColor !important;
+  }
+
+  .product-card:hover a[ref="productTitleLink"] .text-block > * {
+    text-decoration: underline !important;
+    text-decoration-color: currentColor !important;
+  }
+
+  .product-card:hover a[ref="productTitleLink"] p {
+    text-decoration: underline !important;
+    text-decoration-color: currentColor !important;
+  }
+
+  .product-card:hover .text-block p {
+    text-decoration: underline !important;
+    text-decoration-color: currentColor !important;
+  }
+
+  /* Product title styling - full width and uppercase */
+  .product-card a[ref="productTitleLink"] .text-block {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .product-card a[ref="productTitleLink"] .text-block > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em;
+  }
+
+  .product-card .text-block p {
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em;
+    width: 100% !important;
+  }
 {% endstylesheet %}

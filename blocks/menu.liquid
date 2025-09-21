@@ -81,6 +81,28 @@
     margin-block-start: var(--spacing--size);
   }
 
+  .menu__item a {
+    position: relative;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: inline-block;
+  }
+
+  .menu__item a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 0.3s ease;
+  }
+
+  .menu__item a:hover::after {
+    width: 100%;
+  }
+
   .menu .menu__heading--empty {
     display: none;
   }

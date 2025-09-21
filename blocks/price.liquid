@@ -97,6 +97,16 @@
   .installments:not(:has(shopify-payment-terms)) {
     display: none;
   }
+
+  /* Price Styling */
+  .price {
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    line-height: calc(1 + .5 / var(--font-body-scale));
+    color: rgb(var(--color-foreground));
+    font-weight: normal;
+    text-transform: uppercase;
+  }
 {% endstylesheet %}
 
 {% schema %}

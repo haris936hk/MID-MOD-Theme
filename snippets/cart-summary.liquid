@@ -129,4 +129,24 @@
   .cart__installments {
     color: var(--color-foreground);
   }
+
+  /* Fix oversized checkout button and payment options */
+  .cart__checkout-button {
+    height: auto !important;
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .additional-checkout-buttons {
+    font-size: 0.9rem !important;
+  }
+
+  .additional-checkout-buttons button,
+  .additional-checkout-buttons input {
+    height: auto !important;
+    min-height: auto !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
 {% endstylesheet %}
