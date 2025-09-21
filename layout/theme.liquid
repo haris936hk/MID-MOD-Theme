@@ -27,6 +27,7 @@
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
+    {%- render 'min-mod-styles' -%}
 
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
@@ -66,5 +67,10 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    <!-- MIN + MOD Designer Discount -->
+    <designer-discount>
+      {% render 'designer-discount', show_banner: true %}
+    </designer-discount>
   </body>
 </html>

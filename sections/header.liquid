@@ -283,6 +283,113 @@
     --header-height: 60px;
   }
 
+  /* Calculate header group height including announcement bar */
+  body:has(> #header-group .announcement-bar) {
+    --header-group-height: calc(var(--header-height) + 45px); /* Assuming ~45px for announcement bar */
+  }
+
+  /* More precise calculation when both are present */
+  body:has(> #header-group .announcement-bar):has(> #header-group > header) {
+    --header-group-height: calc(var(--header-height) + 45px);
+  }
+
+/* MIN + MOD Header */
+.header {
+  border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.08);
+  background: var(--color-background);
+  position: relative;
+  z-index: 100;
+  width: 100%;
+  transition: var(--header-transition);
+}
+
+.header__row,
+.header__columns {
+  transition: var(--header-transition);
+}
+
+.nav-dropdown {
+  transition: var(--dropdown-transition);
+  transform-origin: top center;
+}  .header__columns {
+    /* Standard navigation layout */
+    --header-left: auto;
+    --header-center: 1fr;
+    --header-right: auto;
+    --header-template-columns: var(--header-left) var(--header-center) var(--header-right);
+
+    display: grid;
+    grid-template-areas: 'left center right';
+    grid-gap: 2rem;
+    grid-template-columns: var(--header-template-columns);
+    align-items: center;
+    padding-block: 1rem;
+    position: relative;
+  }
+
+  .header__column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header__column--left {
+    justify-content: flex-start;
+    gap: 1rem;
+    grid-area: left;
+  }
+
+  .header__column--center {
+    justify-content: center;
+    grid-area: center;
+  }
+
+  .header__column--right {
+    justify-content: flex-end;
+    gap: 0.75rem;
+    grid-area: right;
+  }
+
+  /* Logo */
+  .header-logo img,
+  .header-logo svg {
+    max-height: 32px;
+    width: auto;
+  }
+
+  /* Navigation center positioning */
+  .min-mod-header-nav {
+    position: relative;
+    z-index: 100;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .min-mod-header-nav .nav-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    justify-content: center;
+  }
+
+  /* Mobile responsiveness */
+  @media screen and (max-width: 749px) {
+    body:has(> #header-group > header) {
+      --header-height: 55px;
+    }
+
+    .header__columns {
+      padding-block: 0.75rem;
+      grid-gap: 1rem;
+    }
+
+    .header-logo img,
+    .header-logo svg {
+      max-height: 28px;
+    }
+  }
+
   body:has(> #header-group:empty) {
     --header-group-height: 0px;
   }

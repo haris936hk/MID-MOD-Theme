@@ -59,31 +59,34 @@ export class QuickAddComponent extends Component {
   handleClick = async (event) => {
     event.preventDefault();
 
-    const currentUrl = this.productPageUrl;
+    // For multi-variant products, open the quick add modal
+    if (this.closest('product-card')?.dataset.productVariantsSize !== '1') {
+      const currentUrl = this.productPageUrl;
 
-    // Check if we have cached content for this URL
-    let productGrid = this.#cachedContent.get(currentUrl);
+      // Check if we have cached content for this URL
+      let productGrid = this.#cachedContent.get(currentUrl);
 
-    if (!productGrid) {
-      // Fetch and cache the content
-      const html = await this.fetchProductPage(currentUrl);
-      if (html) {
-        const gridElement = html.querySelector('[data-product-grid-content]');
-        if (gridElement) {
-          // Cache the cloned element to avoid modifying the original
-          productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
-          this.#cachedContent.set(currentUrl, productGrid);
+      if (!productGrid) {
+        // Fetch and cache the content
+        const html = await this.fetchProductPage(currentUrl);
+        if (html) {
+          const gridElement = html.querySelector('[data-product-grid-content]');
+          if (gridElement) {
+            // Cache the cloned element to avoid modifying the original
+            productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
+            this.#cachedContent.set(currentUrl, productGrid);
+          }
         }
       }
-    }
 
-    if (productGrid) {
-      // Use a fresh clone from the cache
-      const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
-      await this.updateQuickAddModal(freshContent);
-    }
+      if (productGrid) {
+        // Use a fresh clone from the cache
+        const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
+        await this.updateQuickAddModal(freshContent);
+      }
 
-    this.#openQuickAddModal();
+      this.#openQuickAddModal();
+    }
   };
 
   /** @param {QuickAddDialog} dialogComponent */

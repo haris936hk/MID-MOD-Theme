@@ -104,7 +104,10 @@
     "sign_up": "Sign up",
     "submit": "Submit",
     "view_store_information": "View store information",
-    "sort": "Sort"
+    "sort": "Sort",
+    "copy": "copy",
+    "copied": "copied!",
+    "cancel": "cancel"
   },
   "blocks": {
     "contact_form": {
@@ -313,7 +316,85 @@
       "added_to_cart": "Added to cart",
       "add_to_cart_error": "Error adding to cart",
       "sold_out": "Sold out",
-      "unavailable": "Unavailable"
+      "unavailable": "Unavailable",
+      "sku": "sku",
+      "sku_unavailable": "n/a"
+    }
+  },
+  "general": {
+    "designer_discount": {
+      "industry_professional": "industry professional?",
+      "save_twenty_percent": "save 20% on your order",
+      "code": "code",
+      "copy_code": "copy discount code",
+      "verify_title": "verify professional status",
+      "verify_message": "please provide your professional details to access the industry discount",
+      "business_name": "business name",
+      "business_name_placeholder": "your company or studio name",
+      "professional_email": "professional email",
+      "email_placeholder": "your business email address",
+      "terms_agreement": "i confirm i am an industry professional and agree to the terms",
+      "verify_and_apply": "verify & apply discount",
+      "validation_error": "please fill in all required fields",
+      "verification_error": "verification failed. please try again",
+      "success_message": "discount applied successfully!"
+    }
+  },
+  "navigation": {
+    "products": "products",
+    "about": "about",
+    "contact": "contact",
+    "shop_by_room": "shop by room",
+    "shop_by_type": "shop by type",
+    "shop_by_material": "shop by material",
+    "shop_by_style": "shop by style",
+    "rooms": {
+      "living": "living",
+      "kitchen": "kitchen",
+      "dining": "dining",
+      "bedroom": "bedroom",
+      "study": "study",
+      "laundry": "laundry",
+      "bathroom": "bathroom",
+      "kids_room": "kids room"
+    },
+    "types": {
+      "vases_vessels": "vases & vessels",
+      "sculptures_objects": "sculptures & objects",
+      "kitchen_tableware": "kitchen & tableware",
+      "trays_bowls": "trays & bowls",
+      "cushions_throws": "cushions & throws",
+      "storage_organisation": "storage & organisation",
+      "accessories": "accessories",
+      "plants_florals": "plants & florals"
+    },
+    "materials": {
+      "glass_acrylic": "glass & acrylic",
+      "marble_stone": "marble & stone",
+      "chrome": "chrome",
+      "resin_ceramic": "resin & ceramic"
+    },
+    "styles": {
+      "modern_contemporary": "modern - contemporary",
+      "coastal": "coastal",
+      "retro": "retro",
+      "wabi_sabi": "wabi sabi"
+    }
+  },
+  "search": {
+    "placeholder": "search products...",
+    "submit": "search",
+    "filter_by": "filter by",
+    "toggle_filters": "toggle filters",
+    "remove_filter": "remove filter",
+    "clear_all_filters": "clear all",
+    "price_min": "min price",
+    "price_max": "max price",
+    "apply_price": "apply",
+    "no_results": "no products found",
+    "results_count": {
+      "one": "{{ count }} product found",
+      "other": "{{ count }} products found"
     }
   }
 }

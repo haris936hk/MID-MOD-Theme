@@ -1,0 +1,377 @@
+{% doc %}
+  Performance optimizations for MIN + MOD theme.
+  Implements lazy loading, image optimization, and critical resource hints.
+
+  @example
+  {% render 'performance-optimizations' %}
+{% enddoc %}
+
+<!-- Critical Resource Hints -->
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+<link rel="dns-prefetch" href="//productreviews.shopifycdn.com">
+<link rel="dns-prefetch" href="//ajax.googleapis.com">
+<link rel="dns-prefetch" href="//maps.googleapis.com">
+<link rel="dns-prefetch" href="//maps.gstatic.com">
+
+<!-- Critical CSS for above-the-fold content -->
+{% stylesheet %}
+  /* Critical CSS for immediate page load */
+  .critical-load {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .loading-placeholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: loading 1.4s ease infinite;
+  }
+
+  @keyframes loading {
+    0% { background-position: 100% 50%; }
+    100% { background-position: -100% 50%; }
+  }
+
+  /* Intersection Observer loading states */
+  .lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .lazy-load.loaded {
+    opacity: 1;
+  }
+
+  /* Image optimization classes */
+  .optimized-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .optimized-image[loading="lazy"] {
+    background: var(--color-background);
+  }
+
+  /* Product grid performance */
+  .product-grid-optimized {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    contain: layout style;
+  }
+
+  .product-card-optimized {
+    contain: layout style paint;
+    will-change: transform;
+  }
+
+  /* Collection page performance */
+  .collection-container {
+    contain: layout;
+  }
+
+  /* Search performance */
+  .search-results {
+    contain: layout style;
+  }
+
+  /* Mobile performance optimizations */
+  @media screen and (max-width: 768px) {
+    .product-grid-optimized {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  /* Reduce motion for performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  // Performance monitoring and optimization
+  class PerformanceOptimizer {
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      this.setupIntersectionObserver();
+      this.optimizeImages();
+      this.setupResourceHints();
+      this.preloadCriticalResources();
+      this.setupServiceWorker();
+      this.monitorPerformance();
+    }
+
+    // Intersection Observer for lazy loading
+    setupIntersectionObserver() {
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+                observer.unobserve(img);
+              }
+            }
+          });
+        }, {
+          rootMargin: '50px 0px',
+          threshold: 0.1
+        });
+
+        // Observe all lazy load images
+        document.querySelectorAll('img[data-src]').forEach(img => {
+          imageObserver.observe(img);
+        });
+
+        // Observe lazy load sections
+        const sectionObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('loaded');
+            }
+          });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.lazy-load').forEach(section => {
+          sectionObserver.observe(section);
+        });
+      }
+    }
+
+    // Optimize images based on device and connection
+    optimizeImages() {
+      if ('connection' in navigator) {
+        const connection = navigator.connection;
+        const slowConnection = connection.effectiveType === 'slow-2g' ||
+                              connection.effectiveType === '2g' ||
+                              connection.saveData;
+
+        if (slowConnection) {
+          // Use lower quality images for slow connections
+          document.querySelectorAll('img').forEach(img => {
+            if (img.src && img.src.includes('shopifycdn.com')) {
+              img.src = img.src.replace(/(\?.*)?$/, '?width=400&quality=70');
+            }
+          });
+        }
+      }
+
+      // WebP support detection and fallback
+      const supportsWebP = (function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 1;
+        return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+      })();
+
+      if (supportsWebP) {
+        document.querySelectorAll('img[data-webp]').forEach(img => {
+          img.src = img.dataset.webp;
+        });
+      }
+    }
+
+    // Setup resource hints for better loading
+    setupResourceHints() {
+      // Preload critical fonts
+      const fontPreloads = [
+        '{{ settings.type_body_font | font_url }}',
+        '{{ settings.type_heading_font | font_url }}'
+      ].filter(url => url && url !== 'undefined');
+
+      fontPreloads.forEach(fontUrl => {
+        if (fontUrl) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'font';
+          link.type = 'font/woff2';
+          link.crossOrigin = 'anonymous';
+          link.href = fontUrl;
+          document.head.appendChild(link);
+        }
+      });
+    }
+
+    // Preload critical resources
+    preloadCriticalResources() {
+      // Preload critical CSS
+      const criticalCSS = document.querySelector('link[href*="base.css"]');
+      if (criticalCSS) {
+        criticalCSS.rel = 'preload';
+        criticalCSS.as = 'style';
+        criticalCSS.onload = function() {
+          this.rel = 'stylesheet';
+        };
+      }
+
+      // Preload hero images
+      const heroImages = document.querySelectorAll('.hero img, .banner img');
+      heroImages.forEach(img => {
+        if (img.src) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = img.src;
+          document.head.appendChild(link);
+        }
+      });
+    }
+
+    // Setup service worker for caching
+    setupServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    }
+
+    // Monitor performance metrics
+    monitorPerformance() {
+      if ('PerformanceObserver' in window) {
+        // Monitor Largest Contentful Paint
+        const lcpObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          console.log('LCP:', lastEntry.startTime);
+        });
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+
+        // Monitor First Input Delay
+        const fidObserver = new PerformanceObserver((list) => {
+          list.getEntries().forEach(entry => {
+            console.log('FID:', entry.processingStart - entry.startTime);
+          });
+        });
+        fidObserver.observe({ type: 'first-input', buffered: true });
+
+        // Monitor Cumulative Layout Shift
+        let clsValue = 0;
+        const clsObserver = new PerformanceObserver((list) => {
+          list.getEntries().forEach(entry => {
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value;
+              console.log('CLS:', clsValue);
+            }
+          });
+        });
+        clsObserver.observe({ type: 'layout-shift', buffered: true });
+      }
+
+      // Monitor page load times
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const timing = performance.timing;
+          const loadTime = timing.loadEventEnd - timing.navigationStart;
+          console.log('Page Load Time:', loadTime + 'ms');
+
+          // Send to analytics if available
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'timing_complete', {
+              name: 'load',
+              value: loadTime
+            });
+          }
+        }, 0);
+      });
+    }
+
+    // Optimize third-party scripts
+    optimizeThirdPartyScripts() {
+      // Delay non-critical scripts
+      const delayedScripts = document.querySelectorAll('script[data-delay]');
+
+      const loadDelayedScripts = () => {
+        delayedScripts.forEach(script => {
+          const newScript = document.createElement('script');
+          newScript.src = script.dataset.src || script.src;
+          newScript.async = true;
+          document.head.appendChild(newScript);
+        });
+      };
+
+      // Load delayed scripts on user interaction
+      const userInteractionEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+
+      const loadScriptsOnInteraction = () => {
+        loadDelayedScripts();
+        userInteractionEvents.forEach(event => {
+          window.removeEventListener(event, loadScriptsOnInteraction, { passive: true });
+        });
+      };
+
+      userInteractionEvents.forEach(event => {
+        window.addEventListener(event, loadScriptsOnInteraction, { passive: true });
+      });
+
+      // Fallback: load after 5 seconds
+      setTimeout(loadDelayedScripts, 5000);
+    }
+
+    // Image format optimization
+    optimizeImageFormats() {
+      // Check for AVIF support
+      const supportsAVIF = (function() {
+        const avif = new Image();
+        avif.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgABogQEAwgMg8f8D///8WfhwB8+ErK42A=";
+        return avif.complete && avif.width > 0 && avif.height > 0;
+      })();
+
+      if (supportsAVIF) {
+        document.querySelectorAll('img[data-avif]').forEach(img => {
+          img.src = img.dataset.avif;
+        });
+      }
+    }
+  }
+
+  // Initialize performance optimizer when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new PerformanceOptimizer();
+    });
+  } else {
+    new PerformanceOptimizer();
+  }
+
+  // Critical path optimization
+  window.addEventListener('load', () => {
+    // Remove loading classes
+    document.querySelectorAll('.loading-placeholder').forEach(el => {
+      el.classList.remove('loading-placeholder');
+    });
+
+    // Optimize scrolling performance
+    let ticking = false;
+    const updateScrollElements = () => {
+      // Update scroll-dependent elements here
+      ticking = false;
+    };
+
+    const requestTick = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScrollElements);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', requestTick, { passive: true });
+  });
+{% endjavascript %}

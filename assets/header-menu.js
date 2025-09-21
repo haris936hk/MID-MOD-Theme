@@ -21,9 +21,55 @@ class HeaderMenu extends Component {
   requiredRefs = ['overflowMenu'];
 
   #abortController = new AbortController();
+  
+  updateDropdownPosition() {
+    const headerComponent = document.getElementById('header-component');
+    const announcementBar = document.querySelector('.announcement-bar');
+    
+    if (!headerComponent) return;
+
+    const headerRect = headerComponent.getBoundingClientRect();
+    let dropdownTop = headerRect.bottom;
+
+    // Add consistent padding
+    const dropdownGap = 10;
+    dropdownTop += dropdownGap;
+
+    // Update the dropdown position with a smooth transition
+    document.documentElement.style.setProperty('--dropdown-top-position', `${dropdownTop}px`);
+    document.documentElement.style.setProperty('--header-transition', 'all 0.3s ease-in-out');
+  }
 
   connectedCallback() {
     super.connectedCallback();
+
+    // Set up dropdown positioning
+    this.updateDropdownPosition();
+    
+    // Update position on scroll and resize
+    window.addEventListener('scroll', () => this.updateDropdownPosition(), { signal: this.#abortController.signal });
+    window.addEventListener('resize', () => this.updateDropdownPosition(), { signal: this.#abortController.signal });
+    
+    // Observe header sticky state changes
+    const headerComponent = document.getElementById('header-component');
+    if (headerComponent) {
+      new MutationObserver(() => this.updateDropdownPosition())
+        .observe(headerComponent, {
+          attributes: true,
+          attributeFilter: ['data-sticky-state', 'sticky']
+        });
+    }
+
+    // Observe announcement bar visibility changes
+    const announcementBar = document.querySelector('.announcement-bar');
+    if (announcementBar) {
+      new MutationObserver(() => this.updateDropdownPosition())
+        .observe(announcementBar, {
+          attributes: true,
+          childList: true,
+          subtree: true
+        });
+    }
 
     this.overflowMenu?.addEventListener('pointerleave', () => this.#debouncedDeactivate(), {
       signal: this.#abortController.signal,

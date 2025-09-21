@@ -21,6 +21,10 @@ body {
   --hover-transition-timing: ease-out;
   --surface-transition-duration: 0.3s;
   --surface-transition-timing: var(--ease-out-quad);
+  
+  /* Header transitions */
+  --header-transition: all 0.3s ease-in-out;
+  --dropdown-transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 html {

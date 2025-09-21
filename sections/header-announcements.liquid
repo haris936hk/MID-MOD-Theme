@@ -1,4 +1,6 @@
 
+{% comment %}
+Announcement bar is temporarily disabled
 
 {% if section.blocks.size > 1 %}
   <script
@@ -9,6 +11,8 @@
 {% endif %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
+{% endcomment %}
+{% comment %}
 <aside
   class="announcement-bar spacing-style section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
   style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;"
@@ -21,7 +25,9 @@
       assign show_arrows = true
     endif
   %}
+{% endcomment %}
 
+{% comment %}
   <announcement-bar-component
     class="announcement-bar__slider"
     {% if autoplay == true %}
@@ -37,6 +43,7 @@
     </div>
   </announcement-bar-component>
 </aside>
+{% endcomment %}
 
 {% stylesheet %}
   .announcement-bar {

@@ -1,0 +1,113 @@
+{% doc %}
+  Displays the product SKU for the current variant.
+  Updates dynamically when variant is changed.
+
+  @example
+  {% content_for 'block', type: 'product-sku', id: 'product-sku' %}
+{% enddoc %}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<div
+  class="product-sku"
+  data-variant-sku="{{ current_variant.sku | default: 'N/A' }}"
+  {{ block.shopify_attributes }}
+>
+  {% if current_variant.sku != blank %}
+    <span class="sku-label">{{ 'products.product.sku' | t }}:</span>
+    <span class="sku-value" data-sku>{{ current_variant.sku }}</span>
+  {% else %}
+    <span class="sku-label">{{ 'products.product.sku' | t }}:</span>
+    <span class="sku-value" data-sku>{{ 'products.product.sku_unavailable' | t }}</span>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .product-sku {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+  }
+
+  .product-sku .sku-label {
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-foreground-heading);
+  }
+
+  .product-sku .sku-value {
+    font-family: var(--font-body-family);
+    text-transform: lowercase;
+    color: var(--color-foreground);
+    background: var(--color-background);
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(var(--color-foreground-rgb), 0.15);
+    border-radius: var(--border-radius);
+  }
+
+  /* Responsive adjustments */
+  @media screen and (max-width: 749px) {
+    .product-sku {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductSKU extends HTMLElement {
+    constructor() {
+      super();
+
+      // Listen for variant changes
+      this.addEventListener('variant:change', this.handleVariantChange.bind(this));
+
+      // Also listen to the document for variant changes from other components
+      document.addEventListener('variant:change', this.handleVariantChange.bind(this));
+    }
+
+    handleVariantChange(event) {
+      if (!event.detail || !event.detail.variant) return;
+
+      const variant = event.detail.variant;
+      const skuElement = this.querySelector('[data-sku]');
+
+      if (skuElement) {
+        if (variant.sku) {
+          skuElement.textContent = variant.sku;
+          this.dataset.variantSku = variant.sku;
+        } else {
+          skuElement.textContent = '{{ 'products.product.sku_unavailable' | t }}';
+          this.dataset.variantSku = 'N/A';
+        }
+      }
+    }
+  }
+
+  // Register the custom element
+  if (!customElements.get('product-sku')) {
+    customElements.define('product-sku', ProductSKU);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.product.blocks.sku.name",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.product.blocks.sku.description"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product.blocks.sku.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,627 @@
+{% doc %}
+  Enhanced search and filtering component for MIN + MOD.
+  Provides clean, fast filtering by categories, price, and other attributes.
+
+  @param {collection} collection - The current collection object
+  @param {boolean} [show_sidebar] - Whether to show filters in sidebar (default: true)
+  @param {string} [filter_position] - Position of filters: 'left', 'right', 'top' (default: 'left')
+
+  @example
+  {% render 'enhanced-search-filter', collection: collection %}
+{% enddoc %}
+
+{%- assign show_sidebar = show_sidebar | default: true -%}
+{%- assign filter_position = filter_position | default: 'left' -%}
+
+<div class="enhanced-search-filter" data-enhanced-search>
+
+  <!-- Search Bar -->
+  <div class="search-bar-container">
+    <form class="search-form" action="{{ routes.search_url }}" method="get">
+      <div class="search-input-wrapper">
+        <input
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'search.placeholder' | t }}"
+          class="search-input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          data-search-input
+        >
+        <button type="submit" class="search-submit" aria-label="{{ 'search.submit' | t }}">
+          {% render 'icon-search' %}
+        </button>
+      </div>
+      <!-- Hidden fields for maintaining filters -->
+      {% for filter in collection.filters %}
+        {% for value in filter.active_values %}
+          <input type="hidden" name="{{ filter.param_name }}" value="{{ value.param_value }}">
+        {% endfor %}
+      {% endfor %}
+    </form>
+
+    <!-- Active Filters Display -->
+    {% if collection.filters %}
+      <div class="active-filters" data-active-filters>
+        {% assign has_active_filters = false %}
+        {% for filter in collection.filters %}
+          {% if filter.active_values.size > 0 %}
+            {% assign has_active_filters = true %}
+            {% for value in filter.active_values %}
+              <div class="active-filter-tag">
+                <span class="filter-tag-label">{{ value.label }}</span>
+                <a href="{{ value.url_to_remove }}" class="filter-tag-remove" aria-label="{{ 'search.remove_filter' | t }}: {{ value.label }}">×</a>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        {% if has_active_filters %}
+          <a href="{{ collection.url }}" class="clear-all-filters">{{ 'search.clear_all_filters' | t }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Filter Sidebar -->
+  {% if show_sidebar and collection.filters.size > 0 %}
+    <div class="filter-sidebar filter-sidebar--{{ filter_position }}" data-filter-sidebar>
+      <div class="filter-sidebar__header">
+        <h3 class="filter-sidebar__title">{{ 'search.filter_by' | t }}</h3>
+        <button type="button" class="filter-sidebar__toggle" data-filter-toggle aria-label="{{ 'search.toggle_filters' | t }}">
+          {% render 'icon-filter' %}
+        </button>
+      </div>
+
+      <div class="filter-sidebar__content" data-filter-content>
+        {% for filter in collection.filters %}
+          <div class="filter-group" data-filter-group="{{ filter.param_name }}">
+            <details class="filter-details" {% if filter.active_values.size > 0 %}open{% endif %}>
+              <summary class="filter-summary">
+                <span class="filter-title">{{ filter.label }}</span>
+                <span class="filter-icon">{% render 'icon-chevron-down' %}</span>
+              </summary>
+
+              <div class="filter-options">
+                {% case filter.type %}
+                  {% when 'boolean' or 'list' %}
+                    {% for value in filter.values %}
+                      <div class="filter-option">
+                        <input
+                          type="checkbox"
+                          id="filter-{{ filter.param_name }}-{{ forloop.index }}"
+                          name="{{ filter.param_name }}"
+                          value="{{ value.param_value }}"
+                          {% if value.active %}checked{% endif %}
+                          data-filter-checkbox
+                        >
+                        <label for="filter-{{ filter.param_name }}-{{ forloop.index }}" class="filter-label">
+                          <span class="filter-text">{{ value.label }}</span>
+                          <span class="filter-count">({{ value.count }})</span>
+                        </label>
+                      </div>
+                    {% endfor %}
+
+                  {% when 'price_range' %}
+                    <div class="price-range-filter">
+                      <div class="price-inputs">
+                        <div class="price-input-group">
+                          <label for="price-min">{{ 'search.price_min' | t }}</label>
+                          <input
+                            type="number"
+                            id="price-min"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ filter.min_value.value | divided_by: 100 }}"
+                            placeholder="{{ filter.range_min | divided_by: 100 }}"
+                            min="{{ filter.range_min | divided_by: 100 }}"
+                            max="{{ filter.range_max | divided_by: 100 }}"
+                            step="1"
+                            data-price-min
+                          >
+                        </div>
+                        <div class="price-input-group">
+                          <label for="price-max">{{ 'search.price_max' | t }}</label>
+                          <input
+                            type="number"
+                            id="price-max"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ filter.max_value.value | divided_by: 100 }}"
+                            placeholder="{{ filter.range_max | divided_by: 100 }}"
+                            min="{{ filter.range_min | divided_by: 100 }}"
+                            max="{{ filter.range_max | divided_by: 100 }}"
+                            step="1"
+                            data-price-max
+                          >
+                        </div>
+                      </div>
+                      <button type="button" class="price-apply-btn" data-apply-price>{{ 'search.apply_price' | t }}</button>
+                    </div>
+                {% endcase %}
+              </div>
+            </details>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+
+{% stylesheet %}
+  .enhanced-search-filter {
+    width: 100%;
+  }
+
+  /* Search Bar Styles */
+  .search-bar-container {
+    margin-bottom: 2rem;
+  }
+
+  .search-form {
+    margin-bottom: 1rem;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--color-background);
+    border: 1px solid rgba(var(--color-foreground-rgb), 0.25);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--color-foreground);
+    font-size: 1rem;
+    text-transform: lowercase;
+  }
+
+  .search-input:focus {
+    outline: none;
+  }
+
+  .search-input-wrapper:focus-within {
+    border-color: var(--color-foreground);
+    box-shadow: 0 0 0 1px var(--color-foreground);
+  }
+
+  .search-submit {
+    padding: 0.75rem;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .search-submit:hover {
+    background: var(--color-foreground-heading);
+  }
+
+  /* Active Filters */
+  .active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .active-filter-tag {
+    display: flex;
+    align-items: center;
+    background: rgba(var(--color-foreground-rgb), 0.1);
+    border: 1px solid rgba(var(--color-foreground-rgb), 0.2);
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    text-transform: lowercase;
+  }
+
+  .filter-tag-label {
+    margin-right: 0.5rem;
+    color: var(--color-foreground);
+  }
+
+  .filter-tag-remove {
+    color: var(--color-foreground);
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0 0.25rem;
+  }
+
+  .filter-tag-remove:hover {
+    color: var(--color-foreground-heading);
+  }
+
+  .clear-all-filters {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 1rem;
+  }
+
+  /* Filter Sidebar */
+  .filter-sidebar {
+    background: var(--color-background);
+    border: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+
+  .filter-sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+    background: rgba(var(--color-foreground-rgb), 0.02);
+  }
+
+  .filter-sidebar__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-foreground-heading);
+  }
+
+  .filter-sidebar__toggle {
+    background: none;
+    border: none;
+    color: var(--color-foreground);
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .filter-sidebar__content {
+    padding: 0;
+  }
+
+  /* Filter Groups */
+  .filter-group {
+    border-bottom: 1px solid rgba(var(--color-foreground-rgb), 0.1);
+  }
+
+  .filter-group:last-child {
+    border-bottom: none;
+  }
+
+  .filter-details {
+    border: none;
+  }
+
+  .filter-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    cursor: pointer;
+    list-style: none;
+    background: var(--color-background);
+    transition: background-color 0.2s ease;
+  }
+
+  .filter-summary:hover {
+    background: rgba(var(--color-foreground-rgb), 0.02);
+  }
+
+  .filter-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .filter-title {
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-foreground-heading);
+    font-size: 0.875rem;
+  }
+
+  .filter-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .filter-details[open] .filter-icon {
+    transform: rotate(180deg);
+  }
+
+  .filter-options {
+    padding: 0 1rem 1rem 1rem;
+    background: rgba(var(--color-foreground-rgb), 0.01);
+  }
+
+  /* Filter Options */
+  .filter-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .filter-option:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-option input[type="checkbox"] {
+    margin-right: 0.75rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .filter-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+    font-size: 0.875rem;
+    text-transform: lowercase;
+    color: var(--color-foreground);
+  }
+
+  .filter-count {
+    color: rgba(var(--color-foreground-rgb), 0.6);
+    font-size: 0.8rem;
+  }
+
+  /* Price Range Filter */
+  .price-range-filter {
+    padding-top: 0.5rem;
+  }
+
+  .price-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .price-input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-foreground-heading);
+  }
+
+  .price-input-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid rgba(var(--color-foreground-rgb), 0.25);
+    border-radius: var(--border-radius);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+  }
+
+  .price-apply-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .price-apply-btn:hover {
+    background: var(--color-foreground-heading);
+  }
+
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .filter-sidebar {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 80%;
+      max-width: 300px;
+      height: 100vh;
+      z-index: 9999;
+      transition: left 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .filter-sidebar.active {
+      left: 0;
+    }
+
+    .filter-sidebar__header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .search-bar-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .active-filters {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .active-filter-tag {
+      justify-content: space-between;
+    }
+  }
+
+  /* Overlay for mobile filter */
+  .filter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .filter-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class EnhancedSearchFilter extends HTMLElement {
+    constructor() {
+      super();
+      this.init();
+    }
+
+    init() {
+      this.searchInput = this.querySelector('[data-search-input]');
+      this.filterSidebar = this.querySelector('[data-filter-sidebar]');
+      this.filterToggle = this.querySelector('[data-filter-toggle]');
+      this.filterCheckboxes = this.querySelectorAll('[data-filter-checkbox]');
+      this.priceInputs = this.querySelectorAll('[data-price-min], [data-price-max]');
+      this.applyPriceBtn = this.querySelector('[data-apply-price]');
+
+      this.setupEventListeners();
+      this.createMobileOverlay();
+    }
+
+    setupEventListeners() {
+      // Search input with debounce
+      if (this.searchInput) {
+        let searchTimeout;
+        this.searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            this.handleSearch(e.target.value);
+          }, 300);
+        });
+      }
+
+      // Filter checkboxes
+      this.filterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', this.handleFilterChange.bind(this));
+      });
+
+      // Price range
+      if (this.applyPriceBtn) {
+        this.applyPriceBtn.addEventListener('click', this.applyPriceFilter.bind(this));
+      }
+
+      this.priceInputs.forEach(input => {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            this.applyPriceFilter();
+          }
+        });
+      });
+
+      // Mobile filter toggle
+      if (this.filterToggle) {
+        this.filterToggle.addEventListener('click', this.toggleMobileFilters.bind(this));
+      }
+
+      // Close mobile filters on escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.closeMobileFilters();
+        }
+      });
+    }
+
+    handleSearch(query) {
+      const form = this.querySelector('.search-form');
+      if (form && query.length > 2) {
+        form.submit();
+      }
+    }
+
+    handleFilterChange(e) {
+      const checkbox = e.target;
+      const url = new URL(window.location);
+
+      if (checkbox.checked) {
+        url.searchParams.append(checkbox.name, checkbox.value);
+      } else {
+        const values = url.searchParams.getAll(checkbox.name);
+        url.searchParams.delete(checkbox.name);
+        values.forEach(value => {
+          if (value !== checkbox.value) {
+            url.searchParams.append(checkbox.name, value);
+          }
+        });
+      }
+
+      window.location.href = url.toString();
+    }
+
+    applyPriceFilter() {
+      const minInput = this.querySelector('[data-price-min]');
+      const maxInput = this.querySelector('[data-price-max]');
+      const url = new URL(window.location);
+
+      if (minInput && minInput.value) {
+        url.searchParams.set(minInput.name, (minInput.value * 100).toString());
+      }
+      if (maxInput && maxInput.value) {
+        url.searchParams.set(maxInput.name, (maxInput.value * 100).toString());
+      }
+
+      window.location.href = url.toString();
+    }
+
+    createMobileOverlay() {
+      if (window.innerWidth <= 768) {
+        if (!document.querySelector('.filter-overlay')) {
+          const overlay = document.createElement('div');
+          overlay.className = 'filter-overlay';
+          overlay.addEventListener('click', this.closeMobileFilters.bind(this));
+          document.body.appendChild(overlay);
+        }
+      }
+    }
+
+    toggleMobileFilters() {
+      if (this.filterSidebar) {
+        this.filterSidebar.classList.toggle('active');
+        const overlay = document.querySelector('.filter-overlay');
+        if (overlay) {
+          overlay.classList.toggle('active');
+        }
+        document.body.classList.toggle('filter-open');
+      }
+    }
+
+    closeMobileFilters() {
+      if (this.filterSidebar) {
+        this.filterSidebar.classList.remove('active');
+        const overlay = document.querySelector('.filter-overlay');
+        if (overlay) {
+          overlay.classList.remove('active');
+        }
+        document.body.classList.remove('filter-open');
+      }
+    }
+  }
+
+  // Register the custom element
+  if (!customElements.get('enhanced-search-filter')) {
+    customElements.define('enhanced-search-filter', EnhancedSearchFilter);
+  }
+{% endjavascript %}
