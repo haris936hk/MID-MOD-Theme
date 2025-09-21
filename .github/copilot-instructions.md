@@ -22,6 +22,22 @@ This is a Shopify theme built with a component-based architecture using Liquid t
 - Performance optimizations: `assets/critical.js`, lazy loading
 - UI Components: Cart drawer, header menu, predictive search
 - Utilities: ResizeObserver wrapper, event handling, focus management
+- Section rendering: `section-renderer.js` for dynamic updates
+- Section hydration: `section-hydration.js` for lazy loading sections
+
+### Import Maps & Module Loading
+```liquid
+<script type="importmap">
+  {
+    "imports": {
+      "@theme/critical": "{{ 'critical.js' | asset_url }}",
+      "@theme/component": "{{ 'component.js' | asset_url }}",
+      "@theme/utilities": "{{ 'utilities.js' | asset_url }}"
+    }
+  }
+</script>
+```
+Use `@theme/` aliases when importing modules for consistent pathing.
 
 ### CSS Architecture
 - Critical CSS in `assets/base.css`
@@ -52,10 +68,19 @@ This is a Shopify theme built with a component-based architecture using Liquid t
 
 ### Best Practices
 - Document components with `{% doc %}` tags for parameters and usage
-- Validate schema JSON using provided schemas in `schemas/`
+- Validate schema JSON using TypeScript definitions in `assets/global.d.ts`
 - Use `{% stylesheet %}` and `{% javascript %}` for component-specific code
-- Keep critical assets minimal, load others dynamically
+- Keep critical assets minimal, use modulepreload for key dependencies
+- Handle shadow DOM correctly for component state and morphing
 - Follow existing patterns for component structure and naming
+
+### Performance Optimizations
+- Use Declarative Shadow DOM for component encapsulation
+- Lazy hydrate sections with `section-hydration.js`
+- Leverage view transitions for smooth navigation
+- Prioritize critical path with proper module loading
+- Implement custom ResizeObserver for layout performance
+- Cache section HTML where appropriate
 
 ### Common Patterns
 - Cart interactions: See `cart-drawer.js`, `cart-icon.js`

@@ -190,6 +190,7 @@
 {% stylesheet %}
   .variant-picker {
     width: 100%;
+    contain: layout;
   }
 
   .variant-picker__form {
@@ -208,6 +209,15 @@
     --options-border-radius: var(--variant-picker-button-radius);
     --options-border-width: var(--variant-picker-button-border-width);
     --variant-option-padding-inline: var(--padding-md);
+    contain: layout;
+    height: auto;
+    min-height: auto;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
   }
 
   .variant-option--swatches {
@@ -236,11 +246,18 @@
     margin: 0;
     padding: 0;
     border: none;
+    align-items: flex-start;
+    min-height: auto;
+    height: auto;
   }
 
   .variant-option--buttons legend {
     padding: 0;
     margin-block-end: var(--margin-xs);
+    font-weight: 500;
+    color: var(--color-foreground);
+    font-size: 0.9rem;
+    line-height: 1.4;
   }
 
   .variant-option__swatch-value {
@@ -252,32 +269,39 @@
     --variant-picker-stroke-color: var(--color-variant-border);
 
     display: flex;
-    flex: 0 0 calc(3ch + 1.3em);
+    flex: 0 0 auto;
     align-items: center;
     position: relative;
-    padding-block: var(--padding-sm);
-    padding-inline: var(--padding-lg);
-    border: var(--style-border-width) solid var(--color-variant-border);
-    border-radius: var(--options-border-radius);
-    border-width: var(--options-border-width);
-    overflow: clip;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    overflow: hidden;
     justify-content: center;
-    min-height: calc(3ch + 1.3em);
+    height: auto;
+    min-height: 40px;
     min-width: fit-content;
     white-space: nowrap;
-    background-color: var(--color-variant-background);
-    color: var(--color-variant-text);
-    transition: background-color var(--animation-speed) var(--animation-easing),
-      border-color var(--animation-speed) var(--animation-easing);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
 
     &:hover {
-      background-color: var(--color-variant-hover-background);
-      border-color: var(--color-variant-hover-border);
-      color: var(--color-variant-hover-text);
+      background-color: var(--color-foreground);
+      color: var(--color-background);
+      border-color: var(--color-foreground);
     }
 
     @media screen and (min-width: 750px) {
-      padding: var(--padding-xs) var(--variant-option-padding-inline);
+      padding: 0.6rem 1.2rem;
+      min-height: 44px;
+      font-size: 0.9rem;
     }
   }
 
@@ -303,11 +327,12 @@
   }
 
   .variant-option__button-label:has(:focus-visible) {
-    --variant-picker-stroke-color: var(--color-foreground);
+    --variant-picker-stroke-color: var(--color-primary);
 
-    border-color: var(--color-foreground);
-    outline: var(--focus-outline-width) solid var(--color-foreground);
-    outline-offset: var(--focus-outline-offset);
+    border-color: var(--color-primary);
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.1);
   }
 
   .variant-option__button-label--has-swatch {
@@ -321,21 +346,43 @@
   }
 
   .variant-option__button-label:has(:checked) {
-    color: var(--color-selected-variant-text);
-    background-color: var(--color-selected-variant-background);
-    border-color: var(--color-selected-variant-border);
-    transition: background-color var(--animation-speed) var(--animation-easing),
-      border-color var(--animation-speed) var(--animation-easing);
+    background-color: var(--color-primary);
+    color: var(--color-primary-button-text, #ffffff);
+    border-color: var(--color-primary);
+    font-weight: 500;
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
 
     &:hover {
-      background-color: var(--color-selected-variant-hover-background);
-      border-color: var(--color-selected-variant-hover-border);
-      color: var(--color-selected-variant-hover-text);
+      background-color: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+      color: var(--color-primary-button-hover-text, #ffffff);
     }
   }
 
   .variant-option__button-label:has([data-option-available='false']) {
-    color: rgb(var(--color-variant-text-rgb) / var(--opacity-60));
+    background-color: rgb(var(--color-foreground-rgb) / 0.05);
+    color: rgb(var(--color-foreground-rgb) / 0.4);
+    border-color: rgb(var(--color-border-rgb) / 0.3);
+    cursor: not-allowed;
+    opacity: 0.7;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: rgb(var(--color-foreground-rgb) / 0.4);
+      transform: translateY(-50%);
+    }
+
+    &:hover {
+      background-color: rgb(var(--color-foreground-rgb) / 0.05);
+      color: rgb(var(--color-foreground-rgb) / 0.4);
+      border-color: rgb(var(--color-border-rgb) / 0.3);
+    }
   }
 
   .facets__inputs-list--swatches-grid .variant-option__button-label--has-swatch:hover .swatch {

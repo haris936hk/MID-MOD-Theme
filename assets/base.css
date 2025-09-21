@@ -4393,17 +4393,6 @@ select:focus {
   font-weight: 500;
 }
 
-.variant-option {
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: #ffffff;
-  color: #000000;
-}
-
-.variant-option:hover,
-.variant-option.selected {
-  background: #000000;
-  color: #ffffff;
-}
 
 .search-form input {
   border: 1px solid rgba(0, 0, 0, 0.15);

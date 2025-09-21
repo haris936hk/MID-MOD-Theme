@@ -437,7 +437,13 @@
   .cart-items__title {
     font-size: var(--cart-font-size--md);
     color: var(--color-foreground);
-    text-transform: var(--product-title-case);
+    text-transform: uppercase !important;
+    text-decoration: none !important;
+  }
+
+  .cart-items__title:hover {
+    text-decoration: underline !important;
+    text-decoration-color: currentColor !important;
   }
 
   .cart-items__variant {

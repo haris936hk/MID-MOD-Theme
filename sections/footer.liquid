@@ -375,8 +375,105 @@
 
 {% stylesheet %}
   /* Footer Styling */
-  .footer {
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    background: #fafafa;
+
+  /* Footer Navigation Layout */
+  .section-wrapper[class*="footer"] .layout-panel-flex--row {
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .section-wrapper[class*="footer"] .layout-panel-flex--row > * {
+    flex: 0 1 auto;
+  }
+  
+  .section-wrapper[class*="footer"] .bottom_section {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-left: auto;
+  }
+  
+  .section-wrapper[class*="footer"] .bottom_section icon-component {
+    flex: 0 0 auto;
+  }
+
+  .section-wrapper[class*="footer"] .bottom_section > * {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+  }
+
+  .section-wrapper[class*="footer"] .bottom_section > *:first-child {
+    justify-content: flex-start;
+  }
+
+  .section-wrapper[class*="footer"] .bottom_section > *:last-child {
+    justify-content: flex-end;
+  }
+
+  /* Menu styling */
+  .section-wrapper[class*="footer"] .bottom_section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: auto;
+    width: auto;
+  }
+
+  .section-wrapper[class*="footer"] menu-component {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .section-wrapper[class*="footer"] menu-component a {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+
+  .section-wrapper[class*="footer"] menu-component a:hover {
+    opacity: 1;
+  }
+
+  /* Follow on Shop button */
+  .section-wrapper[class*="footer"] follow-on-shop-component {
+    align-self: flex-start;
+  }
+
+  /* Style the social media icons group */
+  .section-wrapper[class*="footer"] icon-component a {
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+
+  .section-wrapper[class*="footer"] icon-component:hover a {
+    opacity: 1;
+  }
+
+  /* Force bottom section to use space-between layout */
+  .section-wrapper[class*="footer"] [class*="bottom_section"] .layout-panel-flex {
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  /* Ensure social icons group stays on the right */
+  .section-wrapper[class*="footer"] [class*="social_icons_group"] {
+    margin-left: auto !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    .section-wrapper[class*="footer"] .layout-panel-flex--row {
+      flex-direction: column !important;
+      gap: 40px !important;
+    }
+
+    .section-wrapper[class*="footer"] [class*="social_icons_group"] {
+      margin-left: 0 !important;
+      align-self: center !important;
+    }
   }
 {% endstylesheet %}

@@ -1041,12 +1041,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     position: relative;
+    display: inline-block;
   }
 
-  .menu-drawer__menu-item:not(summary):not(:has(> .menu-drawer__link-image))::after {
+  .menu-drawer__menu-item:not(summary):not(:has(> .menu-drawer__link-image)) .menu-drawer__menu-item-text::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     left: 0;
     width: 0;
     height: 1px;
@@ -1054,7 +1055,7 @@
     transition: width 0.3s ease;
   }
 
-  .menu-drawer__menu-item:not(summary):not(:has(> .menu-drawer__link-image)):hover::after {
+  .menu-drawer__menu-item:not(summary):not(:has(> .menu-drawer__link-image)):hover .menu-drawer__menu-item-text::after {
     width: 100%;
   }
 

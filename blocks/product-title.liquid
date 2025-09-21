@@ -16,6 +16,13 @@
   </a>
 {% endif %}
 
+{% stylesheet %}
+  /* Make product title uppercase on product pages */
+  a[ref="productTitleLink"] p {
+    text-transform: uppercase !important;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_title",

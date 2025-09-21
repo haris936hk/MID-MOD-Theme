@@ -66,6 +66,22 @@
     text-transform: var(--summary-font-case);
     min-height: var(--minimum-touch-target);
   }
+
+  /* Enhanced accordion header styling */
+  .accordion .details__header {
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.025em;
+  }
+
+  /* Prevent accordion expansion from affecting page layout */
+  .accordion {
+    contain: layout;
+  }
+
+  .accordion .details-content {
+    will-change: height;
+  }
 {% endstylesheet %}
 
 {% schema %}
